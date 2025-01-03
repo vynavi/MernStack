@@ -2,16 +2,14 @@ pipeline {
     agent any
 
     environment {
-        // Correct path to Node.js installation on Windows
-        NODE_PATH = 'C:/Program Files/nodejs;C:/Program Files/nodejs/node_modules/npm'  // Path to Node.js installation folder
-        SONAR_TOKEN = credentials('sonar_token') // SonarQube token stored in Jenkins credentials
+        PATH = "C:\\Program Files\\nodejs;${env.PATH}" // Update this if Node.js is installed elsewhere
     }
 
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    deleteDir()  // Delete all files in the workspace before checkout
+                    deleteDir()  // Delete workspace before checkout
                     checkout scm
                 }
             }
@@ -20,7 +18,6 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Use bat for Windows to run npm commands
                     bat 'npm install'
                 }
             }
@@ -29,7 +26,6 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    // Use bat to run SonarQube scanner on Windows
                     bat """
                     sonar-scanner ^ 
                         -Dsonar.projectKey=task1 ^ 
@@ -44,7 +40,6 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Use bat to run build command
                     bat 'npm run build'
                 }
             }
@@ -53,7 +48,6 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Use bat to run tests with npm
                     bat 'npm test'
                 }
             }
