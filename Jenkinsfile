@@ -3,8 +3,9 @@ pipeline {
     
     environment {
         // Correct path to Node.js installation on Windows
-        NODE_PATH = 'C:/Program Files/nodejs;C:/Program Files/nodejs/node_modules/npm'  // Path to Node.js installation folder
-        set PATH=%NODE_PATH%;%PATH // Add Node.js and npm to the system PATH variable
+        NODE_PATH = 'C:/Program Files/nodejs'
+        // Add Node.js and npm to the system PATH variable
+        PATH = "${NODE_PATH};C:/Program Files/nodejs/node_modules/npm;%PATH%"
         SONAR_TOKEN = credentials('sonar_token') // SonarQube token stored in Jenkins credentials
     }
 
