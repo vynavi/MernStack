@@ -22,16 +22,31 @@ pipeline {
                 }
             }
         }
+        stage('Verify Directory and File Existence') {
+            steps {
+                script {
+                    // Verify if the 'backend' directory exists
+                    if (fileExists('backend')) {
+                        echo "'backend' directory found."
+                    } else {
+                        error "'backend' directory does not exist in the repository."
+                    }
+                    
+                    // Verify if 'package.json' exists inside the 'backend' directory
+                    if (fileExists('backend/package.json')) {
+                        echo "'package.json' found in the 'backend' directory."
+                    } else {
+                        error "'package.json' file is missing in the 'backend' directory."
+                    }
+                }
+            }
+        }
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Navigate to the backend directory and ensure package.json exists before running npm install
+                    // Navigate to the backend directory and install dependencies
                     dir('backend') {
-                        if (fileExists('package.json')) {
-                            bat 'npm install' // Run npm install only if package.json exists
-                        } else {
-                            error "package.json file is missing in the 'backend' directory"
-                        }
+                        bat 'npm install' // Run npm install inside 'backend' directory
                     }
                 }
             }
@@ -57,7 +72,7 @@ pipeline {
                 script {
                     // Run build command only if 'npm install' was successful, inside the 'backend' directory
                     dir('backend') {
-                        bat 'npm run build' // Run build command
+                        bat 'npm run build' // Run build command inside 'backend'
                     }
                 }
             }
@@ -67,7 +82,7 @@ pipeline {
                 script {
                     // Run tests inside the 'backend' directory
                     dir('backend') {
-                        bat 'npm test' // Run tests
+                        bat 'npm test' // Run tests inside 'backend'
                     }
                 }
             }
