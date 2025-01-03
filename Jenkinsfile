@@ -25,11 +25,13 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Ensure package.json exists before running npm install
-                    if (fileExists('package.json')) {
-                        bat 'npm install' // Run npm install only if package.json exists
-                    } else {
-                        error "package.json file is missing in the repository"
+                    // Navigate to the backend directory and ensure package.json exists before running npm install
+                    dir('backend') {
+                        if (fileExists('package.json')) {
+                            bat 'npm install' // Run npm install only if package.json exists
+                        } else {
+                            error "package.json file is missing in the 'backend' directory"
+                        }
                     }
                 }
             }
@@ -37,30 +39,36 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    // Run SonarQube analysis using the sonar-scanner
-                    bat """
-                    ${SONAR_SCANNER_HOME}\\sonar-scanner.bat ^
-                    -Dsonar.projectKey=${SONAR_PROJECT_KEY} ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.host.url=${SONAR_HOST_URL} ^
-                    -Dsonar.token=${SONAR_TOKEN}
-                    """
+                    // Run SonarQube analysis using the sonar-scanner from the backend directory
+                    dir('backend') {
+                        bat """
+                        ${SONAR_SCANNER_HOME}\\sonar-scanner.bat ^
+                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.host.url=${SONAR_HOST_URL} ^
+                        -Dsonar.token=${SONAR_TOKEN}
+                        """
+                    }
                 }
             }
         }
         stage('Build') {
             steps {
                 script {
-                    // Run build command only if 'npm install' was successful
-                    bat 'npm run build' // Run build command
+                    // Run build command only if 'npm install' was successful, inside the 'backend' directory
+                    dir('backend') {
+                        bat 'npm run build' // Run build command
+                    }
                 }
             }
         }
         stage('Test') {
             steps {
                 script {
-                    // Run tests
-                    bat 'npm test' // Run tests
+                    // Run tests inside the 'backend' directory
+                    dir('backend') {
+                        bat 'npm test' // Run tests
+                    }
                 }
             }
         }
