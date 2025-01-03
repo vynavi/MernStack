@@ -1,40 +1,31 @@
 pipeline {
     agent any
     tools {
-        nodejs 'NodeJS' // Node.js tool name configured in Jenkins
+        nodejs 'NodeJS' 
     }
     environment {
         SONAR_SCANNER_HOME = 'C:\\Program Files\\sonarqube-10.7.0.96327\\bin\\windows-x86-64'
         SONAR_HOST_URL = 'http://localhost:9000'
         SONAR_PROJECT_KEY = 'task1'
         SONAR_PROJECT_NAME = 'task1'
-        SONAR_TOKEN = credentials('sonar_token') // SonarQube token stored in Jenkins credentials
+        SONAR_TOKEN = credentials('sonar_token') 
         PATH = "C:\\Windows\\System32;C:\\Program Files\\Git\\bin"
-        NODE_PATH = 'C:/Program Files/nodejs;C:/Program Files/nodejs/node_modules/npm'  // Path to Node.js installation folder
+        NODE_PATH = 'C:/Program Files/nodejs;C:/Program Files/nodejs/node_modules/npm'  
     }
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    // Ensure we're on the correct branch and repository
+                    
                     echo 'Checking out the repository...'
                     git branch: 'main', url: 'https://github.com/vynavi/MernStack/tree/main/backend.git'
-                    deleteDir()  // Clean workspace before checking out code
+                    deleteDir()  
                 }
             }
         }
         stage('Verify Directory and File Existence') {
             steps {
                 script {
-                    // Check if the 'backend' directory exists in the correct path
-                    //echo 'Checking if backend directory exists...'
-                    //if (fileExists('backend')) {
-                    //    echo "'backend' directory found."
-                    //} else {
-                    //    error "'backend' directory does not exist in the repository."
-                    //}
-                    
-                    // Check if 'package.json' exists inside the 'backend' directory
                     echo 'Checking if package.json exists...'
                     if (fileExists('package.json')) {
                         echo "'package.json' found in the 'backend' directory."
@@ -47,10 +38,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Navigate to the backend directory and install dependencies
                     echo 'Installing dependencies...'
                     dir('backend') {
-                        bat 'npm install' // Run npm install inside 'backend' directory
+                        bat 'npm install' 
                     }
                 }
             }
@@ -58,7 +48,6 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    // Run SonarQube analysis using the sonar-scanner from the backend directory
                     echo 'Running SonarQube analysis...'
                     dir('backend') {
                         bat """
@@ -75,10 +64,9 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Run build command only if 'npm install' was successful, inside the 'backend' directory
                     echo 'Running build...'
                     dir('backend') {
-                        bat 'npm run build' // Run build command inside 'backend'
+                        bat 'npm run build' 
                     }
                 }
             }
@@ -86,10 +74,9 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Run tests inside the 'backend' directory
                     echo 'Running tests...'
                     dir('backend') {
-                        bat 'npm test' // Run tests inside 'backend'
+                        bat 'npm test' 
                     }
                 }
             }
