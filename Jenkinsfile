@@ -3,8 +3,8 @@ pipeline {
     
     environment {
         // Correct path to Node.js installation on Windows
-        NODE_HOME = 'C:/Program Files/nodejs'  // Path to Node.js installation folder
-        PATH = "${NODE_HOME};%PATH%"  // Add Node.js path to the system PATH variable
+        NODE_PATH = 'C:/Program Files/nodejs;C:/Program Files/nodejs/node_modules/npm'  // Path to Node.js installation folder
+        set PATH=%NODE_PATH%;%PATH // Add Node.js and npm to the system PATH variable
         SONAR_TOKEN = credentials('sonar_token') // SonarQube token stored in Jenkins credentials
     }
 
@@ -29,11 +29,11 @@ pipeline {
                 script {
                     // Use bat to run SonarQube scanner on Windows
                     bat """
-                    sonar-scanner.bat 
-                    -Dsonar.projectKey=task1 ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.host.url=http://localhost:9000 ^
-                    -Dsonar.token=${SONAR_TOKEN}
+                    sonar-scanner ^
+                        -Dsonar.projectKey=task1 ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.token=${SONAR_TOKEN}
                     """
                 }
             }
