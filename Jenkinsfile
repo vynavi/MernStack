@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        nodejs 'nodejs' // Node.js tool name configured in Jenkins
+        nodejs 'NodeJS' // Node.js tool name configured in Jenkins
     }
     environment {
         SONAR_SCANNER_HOME = 'C:\\Program Files\\sonarqube-10.7.0.96327\\bin\\windows-x86-64'
