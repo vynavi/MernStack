@@ -15,15 +15,23 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/vynavi/MernStack.git'
                 script {
-                    deleteDir()  // Clean workspace before checkout
+                    // Ensure we're on the correct branch and repository
+                    git branch: 'main', url: 'https://github.com/vynavi/MernStack.git'
+                    deleteDir()  // Clean workspace before checking out code
                 }
             }
         }
         stage('Install Dependencies') {
             steps {
-                bat 'npm install' // Run npm install only once
+                script {
+                    // Ensure package.json exists before running npm install
+                    if (fileExists('package.json')) {
+                        bat 'npm install' // Run npm install only if package.json exists
+                    } else {
+                        error "package.json file is missing in the repository"
+                    }
+                }
             }
         }
         stage('SonarQube Analysis') {
@@ -31,10 +39,10 @@ pipeline {
                 script {
                     // Run SonarQube analysis using the sonar-scanner
                     bat """
-                    C:\\Program Files\\sonarqube-10.7.0.96327\\bin\\windows-x86-64\\sonar-scanner.bat ^
-                    -Dsonar.projectKey=task1 ^
+                    ${SONAR_SCANNER_HOME}\\sonar-scanner.bat ^
+                    -Dsonar.projectKey=${SONAR_PROJECT_KEY} ^
                     -Dsonar.sources=. ^
-                    -Dsonar.host.url=http://localhost:9000 ^
+                    -Dsonar.host.url=${SONAR_HOST_URL} ^
                     -Dsonar.token=${SONAR_TOKEN}
                     """
                 }
@@ -42,12 +50,18 @@ pipeline {
         }
         stage('Build') {
             steps {
-                bat 'npm run build' // Run build command
+                script {
+                    // Run build command only if 'npm install' was successful
+                    bat 'npm run build' // Run build command
+                }
             }
         }
         stage('Test') {
             steps {
-                bat 'npm test' // Run tests
+                script {
+                    // Run tests
+                    bat 'npm test' // Run tests
+                }
             }
         }
     }
