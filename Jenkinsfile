@@ -18,7 +18,7 @@ pipeline {
                 script {
                     // Ensure we're on the correct branch and repository
                     echo 'Checking out the repository...'
-                    git branch: 'main', url: 'https://github.com/vynavi/MernStack.git'
+                    git branch: 'main', url: 'https://github.com/vynavi/MernStack/tree/main/backend'
                     deleteDir()  // Clean workspace before checking out code
                 }
             }
@@ -27,16 +27,16 @@ pipeline {
             steps {
                 script {
                     // Check if the 'backend' directory exists in the correct path
-                    echo 'Checking if backend directory exists...'
-                    if (fileExists('backend')) {
-                        echo "'backend' directory found."
-                    } else {
-                        error "'backend' directory does not exist in the repository."
-                    }
+                    //echo 'Checking if backend directory exists...'
+                    //if (fileExists('backend')) {
+                    //    echo "'backend' directory found."
+                    //} else {
+                    //    error "'backend' directory does not exist in the repository."
+                    //}
                     
                     // Check if 'package.json' exists inside the 'backend' directory
                     echo 'Checking if package.json exists...'
-                    if (fileExists('backend/package.json')) {
+                    if (fileExists('package.json')) {
                         echo "'package.json' found in the 'backend' directory."
                     } else {
                         error "'package.json' file is missing in the 'backend' directory."
