@@ -1,49 +1,69 @@
-
 pipeline {
     agent any
-    tools {
-        nodejs 'nodejs' // Node.js tool name configured in Jenkins
-    }
+    
     environment {
-        SONAR_SCANNER_HOME = 'C:\\Users\\Admin\\Downloads\\scanner\\sonar-scanner-6.2.1.4610-windows-x64\\bin'
-        SONAR_HOST_URL = 'http://localhost:9000'
-        SONAR_PROJECT_KEY = 'backend-task'
-        SONAR_PROJECT_NAME = 'backend-task'
-        SONAR_TOKEN = 'sqp_a3d05eb002e43a7f4e04987fb5ba80850b952c36'
-         PATH = "C:\\Windows\\System32;C:\\Program Files\\Git\bin"
+        // Correct path to Node.js installation on Windows
+        NODE_HOME = 'C:/Program Files/nodejs'  // Path to Node.js
+        PATH = "${NODE_HOME};C:/Program Files/nodejs/node_modules/npm;%PATH%"  // Adding npm to PATH
+        SONAR_TOKEN = credentials('sonar_token') // SonarQube token stored in Jenkins credentials
     }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/manasaa15/mern.git'
+                checkout scm
             }
         }
+
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                script {
+                    // Use bat for Windows to run npm commands
+                    bat 'npm install'
+                }
             }
         }
+
         stage('SonarQube Analysis') {
             steps {
-                bat """
-                "C:\\Users\\Admin\\Downloads\\scanner\\sonar-scanner-6.2.1.4610-windows-x64\\bin\\sonar-scanner.bat" ^
-                -D"sonar.projectKey=backend-task" ^
-                -D"sonar.sources=." ^
-                -D"sonar.host.url=http://localhost:9000" ^
-                -D"sonar.token=sqp_a3d05eb002e43a7f4e04987fb5ba80850b952c36"
-                """
+                script {
+                    // Use bat to run SonarQube scanner on Windows
+                    bat """
+                    sonar-scanner ^
+                        -Dsonar.projectKey=my-nodejs-project ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.token=${SONAR_TOKEN}
+                    """
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Use bat to run build command
+                    bat 'npm run build'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    // Use bat to run tests with npm
+                    bat 'npm test'
+                }
             }
         }
     }
+
     post {
-        always {
-            echo 'Pipeline execution completed.'
-        }
         success {
-            echo 'SonarQube analysis completed successfully!'
+            echo 'Pipeline completed successfully'
         }
         failure {
-            echo 'Pipeline execution failed!'
+            echo 'Pipeline failed'
         }
     }
 }
