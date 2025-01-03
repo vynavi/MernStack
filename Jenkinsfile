@@ -17,6 +17,7 @@ pipeline {
             steps {
                 script {
                     // Ensure we're on the correct branch and repository
+                    echo 'Checking out the repository...'
                     git branch: 'main', url: 'https://github.com/vynavi/MernStack.git'
                     deleteDir()  // Clean workspace before checking out code
                 }
@@ -25,14 +26,16 @@ pipeline {
         stage('Verify Directory and File Existence') {
             steps {
                 script {
-                    // Verify if the 'backend' directory exists
+                    // Check if the 'backend' directory exists in the correct path
+                    echo 'Checking if backend directory exists...'
                     if (fileExists('backend')) {
                         echo "'backend' directory found."
                     } else {
                         error "'backend' directory does not exist in the repository."
                     }
                     
-                    // Verify if 'package.json' exists inside the 'backend' directory
+                    // Check if 'package.json' exists inside the 'backend' directory
+                    echo 'Checking if package.json exists...'
                     if (fileExists('backend/package.json')) {
                         echo "'package.json' found in the 'backend' directory."
                     } else {
@@ -45,6 +48,7 @@ pipeline {
             steps {
                 script {
                     // Navigate to the backend directory and install dependencies
+                    echo 'Installing dependencies...'
                     dir('backend') {
                         bat 'npm install' // Run npm install inside 'backend' directory
                     }
@@ -55,6 +59,7 @@ pipeline {
             steps {
                 script {
                     // Run SonarQube analysis using the sonar-scanner from the backend directory
+                    echo 'Running SonarQube analysis...'
                     dir('backend') {
                         bat """
                         ${SONAR_SCANNER_HOME}\\sonar-scanner.bat ^
@@ -71,6 +76,7 @@ pipeline {
             steps {
                 script {
                     // Run build command only if 'npm install' was successful, inside the 'backend' directory
+                    echo 'Running build...'
                     dir('backend') {
                         bat 'npm run build' // Run build command inside 'backend'
                     }
@@ -81,6 +87,7 @@ pipeline {
             steps {
                 script {
                     // Run tests inside the 'backend' directory
+                    echo 'Running tests...'
                     dir('backend') {
                         bat 'npm test' // Run tests inside 'backend'
                     }
