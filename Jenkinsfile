@@ -29,11 +29,11 @@ pipeline {
                 script {
                     // Use bat to run SonarQube scanner on Windows
                     bat """
-                    sonar-scanner ^
-                        -Dsonar.projectKey=my-nodejs-project ^
-                        -Dsonar.sources=. ^
-                        -Dsonar.host.url=http://localhost:9000 ^
-                        -Dsonar.token=${SONAR_TOKEN}
+                    sonar-scanner.bat 
+                    -Dsonar.projectKey=task1 ^
+                    -Dsonar.sources=. ^
+                    -Dsonar.host.url=http://localhost:9000 ^
+                    -Dsonar.token=${SONAR_TOKEN}
                     """
                 }
             }
