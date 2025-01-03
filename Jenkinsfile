@@ -18,7 +18,7 @@ pipeline {
                 script {
                     // Ensure we're on the correct branch and repository
                     echo 'Checking out the repository...'
-                    git branch: 'main', url: 'https://github.com/vynavi/MernStack/tree/main/backend'
+                    git branch: 'main', url: 'https://github.com/vynavi/MernStack/tree/main/backend.git'
                     deleteDir()  // Clean workspace before checking out code
                 }
             }
